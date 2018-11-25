@@ -70,19 +70,19 @@ Scenario('countries_check', function* (I) {
 });
 
 
-Scenario('geozones_check', function* (I) {
+Scenario('geozones_check', function*(I) {
     I.amOnPage('http://localhost/litecart/admin/');
     I.fillField("//input[@name='username']", 'admin');
     I.fillField("//input[@name='password']", 'admin');
     I.click("//button[@value='Login']");
+    I.click('//span[contains(text(),"Geo Zones")]');
     I.say('Проверяю что геозоны расположены в алфавитном порядке ');
     
-
-    var zone = ['Canada', 'United States of America'];
+    var zone = yield I.grabNumberOfVisibleElements(`//td[3]/a[1]`);
     var z = 0;
-    while (z < zone.length) {
+    while (z < zone) {
         I.click('//span[contains(text(),"Geo Zones")]');
-        I.click("//a[contains(text(),'"+ zone[z] +"')]");
+        I.click('(//td[3]/a[1])['+ (z+1) +']');
         var name_sort = yield I.grabAttributeFrom("//*[contains(@name,'zone_code')]//option[@selected]", 'label');
 
         a = name_sort.sort();
@@ -94,15 +94,14 @@ Scenario('geozones_check', function* (I) {
         if (a == b) {
 
             I.say('Хорошо');
-        }
-        else {
+        } else {
             I.say('Плохо');
             I.say(a);
             I.say(b);
             throw new Error();
         }
 
-        z ++ ; 
+        z++;
     }
 
 
